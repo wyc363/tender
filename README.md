@@ -1,95 +1,112 @@
-# Tender Review System — V0 单审查点全链路
+# Tender Review — V0 Deployment
 
-这是“RP12 V2准确率优化之前”的基线工程仓库。它保留已经跑通的单审查点全链路、持久化Job、HTTP接口与Linux部署代码，不包含后续 `v2优化/`、Full31实验和任何真实运行数据。
+这是已经跑通的单审查点部署版，只保留服务器运行所需代码。仓库不包含V2优化、Full31实验、历史测试工程、原始PDF、专家Excel和运行输出。
 
-## 当前业务范围
+## 当前范围
 
-- 正式启用审查点：`RP_REGION_INDUSTRY_AWARD`
-- 甲方结果索引：`index=12`
-- 默认召回：BM25/RRF Top50
-- 默认Judge：冻结Prompt + `qwen3-8b`（模型参数可通过环境变量配置）
-- 输出：Review Point聚合结果、甲方接口JSON、HTML审查展示
+- 审查点：`RP_REGION_INDUSTRY_AWARD`
+- 甲方索引：`index=12`
+- 召回：BM25/RRF Top50
+- Judge：冻结Prompt，默认`qwen3-8b`
+- Parser VLM：默认`qwen3.7-flash`
+- 对外服务：FastAPI同步接口、Job接口、独立Worker
 
-## 全链路
+## 实际运行链路
 
 ```text
 PDF / file_url
-→ 安全下载与Staging
-→ Docling + Parser结构恢复
-→ Good Markdown
-→ Markdown Chunk
-→ 单审查点BM25/RRF Top50
-→ Candidate Judge
+→ SafeFileUrlResolver与Staging
+→ Docling document.json
+→ Parser VLM与确定性结构恢复
+→ good.md + source_map.jsonl
+→ Markdown Chunk + Provenance
+→ BM25/RRF Top50
+→ Frozen Prompt Judge
 → Evidence Grounding / Gate
 → Review Point Aggregation
-→ Client JSON / HTTP Response
+→ client_api_response.json / HTTP响应
 ```
 
 ## 目录
 
-| 目录 | 作用 |
+| 路径 | 用途 |
 |---|---|
-| `01_pdf_docling` | PDF读取、页眉页脚处理、页面图片、结构恢复与Good Markdown |
-| `02_stage1_stage2` | 早期双源结构解析与相关测试 |
-| `03_md_chunk` | Markdown Event Parser、TEXT/TABLE Chunk及Provenance |
-| `04_retrieval_judge` | 单审查点召回、Judge、Grounding与Gate |
-| `05_pipeline_local` | 全链路编排、聚合、Job、Worker、FastAPI和同步接口 |
-| `05_dependencies` | 分阶段依赖清单和环境变量示例 |
-| `06_sample_artifacts` | 仅保留运行必需的冻结Prompt和Rule Store |
-| `deploy/linux` | Linux启动脚本、systemd服务样例和部署配置 |
-| `docs` | 架构、Schema、运行与故障排查文档 |
+| `01_pdf_docling` | Docling入口及正式Parser运行模块 |
+| `03_md_chunk` | Markdown Chunk与来源闭合 |
+| `04_retrieval_judge` | Top50召回、Judge、Evidence Grounding |
+| `05_pipeline_local` | Pipeline、Job、Worker、FastAPI、结果适配 |
+| `06_sample_artifacts` | 冻结Prompt与Rule Store，属于运行资产 |
+| `deploy/linux` | Linux依赖、启动脚本与systemd样例 |
 
 ## 配置
-
-1. 复制环境变量模板：
 
 ```powershell
 Copy-Item "05_pipeline_local/.env.example" "05_pipeline_local/.env"
 ```
 
-2. 在本地 `.env` 中填写Parser与Judge的Endpoint、API Key和模型名。`.env`已被Git忽略，禁止提交。
-3. `05_pipeline_local/config/pipeline.local.yaml`使用相对路径及环境变量，可在Windows和Linux迁移。
+在 `.env` 中配置：
 
-## 本地检查
+- `PARSER_VLM_API_BASE`
+- `PARSER_VLM_API_KEY`
+- `PARSER_VLM_MODEL`
+- `MODEL_API_BASE`
+- `MODEL_API_KEY`
+- `MODEL_NAME`
+
+真实 `.env` 已被Git忽略，禁止提交。
+
+## Windows本地检查
 
 ```powershell
 $env:PYTHONPATH = "$PWD/05_pipeline_local;$PWD/01_pdf_docling;$PWD/03_md_chunk;$PWD/03_md_chunk/src;$PWD/04_retrieval_judge;$PWD/04_retrieval_judge/src"
 python -m review_pipeline.cli --pdf "D:/path/to/input.pdf" --rule-id RP_REGION_INDUSTRY_AWARD --check-only
 ```
 
-`--check-only`只检查路径、配置和运行条件，不调用模型。真实运行前请阅读 `05_pipeline_local/README.md`。
+`--check-only`不会调用模型。正式运行时将最后的`--check-only`改为`--run --resume`。
 
-## HTTP接口
+## HTTP与Worker
+
+在两个终端中分别启动：
+
+```powershell
+cd 05_pipeline_local
+python -m review_pipeline.http.server --config config/pipeline.local.yaml
+```
+
+```powershell
+cd 05_pipeline_local
+python -m review_pipeline.job_worker --config config/pipeline.local.yaml
+```
+
+主要接口：
 
 - `GET /health`
+- `POST /api/v1/review`
 - `POST /api/v1/review/jobs`
 - `GET /api/v1/review/jobs/{job_id}`
 - `GET /api/v1/review/jobs/{job_id}/result`
-- `POST /api/v1/review`（同步甲方接口）
 
-FastAPI不自动启动Worker。API与Worker需要作为两个独立进程运行。
+## Linux部署
 
-## 测试
+服务器上建议显式克隆为`/opt/tender_review/tender_review_system`：
 
-测试默认使用Fake/Test Double；不要在测试环境中填写真实Key。各模块可分别执行：
-
-```powershell
-python -m pytest 01_pdf_docling/docling_postprocess/tests
-python -m pytest 03_md_chunk/tests
-python -m pytest 04_retrieval_judge/tests
-python -m pytest 05_pipeline_local/tests
+```bash
+sudo mkdir -p /opt/tender_review
+sudo chown -R "$USER":"$USER" /opt/tender_review
+git clone https://github.com/wyc363/tender.git /opt/tender_review/tender_review_system
+cd /opt/tender_review/tender_review_system
+bash deploy/linux/bootstrap_dirs.sh
 ```
 
-## 仓库边界
+随后按`deploy/linux/README.md`创建虚拟环境、填写`.env`并安装systemd服务。API和Worker必须作为独立进程运行。
 
-本仓库没有包含：
+## 仓库不包含
 
-- `.env`与任何真实API Key；
-- 原始PDF和甲方/专家Excel；
-- 历史运行输出、SQLite数据库、raw responses和模型缓存；
-- DOC011/DOC0181正文与Candidate样例；
-- RP12 V2、Stage 3B～4F、方案B/C及Full31优化实验。
+- 真实API Key与`.env`；
+- PDF、Excel、SQLite和模型raw response；
+- DOC011/DOC0181历史运行产物；
+- 早期`02_stage1_stage2`实验；
+- 单元测试、阶段报告和V2准确率优化代码；
+- Full31多审查点实验。
 
-本仓库是可运行的V0工程基线，不代表全部31项规则已经完成准确率验证。
-
-
+该仓库是当前单审查点部署基线，不代表31个审查点均已完成业务准确率验收。

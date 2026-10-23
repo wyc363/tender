@@ -1,2 +1,0 @@
-# Only required when rebuilding config/rule_catalog.compiled.json from Excel.
-openpyxl>=3.1,<4
