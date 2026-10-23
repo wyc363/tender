@@ -1,0 +1,8 @@
+# Phase 7-D Docling runtime. Native Linux wheels are resolved on the server.
+docling==2.126.0
+docling-core==2.95.0
+docling-ibm-models==4.0.2
+docling-parse==7.18.0
+rapidocr==3.9.2
+onnxruntime==1.30.0
+opencv-python==5.0.0.93

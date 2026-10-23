@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "description": "审查点名称到稳定内部ID的显式覆盖。未列出的审查点使用 RP_加三位目录序号。",
+  "by_name": {
+    "地域/行业业绩奖项及外部荣誉作为招投标加分、中标条件": "RP_REGION_INDUSTRY_AWARD"
+  }
+}

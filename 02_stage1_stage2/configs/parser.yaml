@@ -1,0 +1,9 @@
+mineru:
+  method: auto
+  backend: hybrid-engine
+  effort: high
+  table: true
+  image_analysis: false
+
+parse_planner:
+  merge_adjacent_gap_pages: 0

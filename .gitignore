@@ -1,11 +1,46 @@
-__pycache__/
+# Secrets
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+
+# Python
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
 *.py[cod]
-.pytest_cache/
+.coverage
+htmlcov/
 .venv/
 venv/
-.idea/
-.vscode/
-.env
-.env.*
+
+# Runtime data and model outputs
+outputs/
+output/
+runtime/
+staging/
+**/.state/
+**/.staging/
+**/.tmp/
+*.db
+*.sqlite
+*.sqlite3
+*.partial
 *.log
 
+# User documents and large artifacts
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.zip
+*.7z
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

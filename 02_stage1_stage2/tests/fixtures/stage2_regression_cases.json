@@ -1,0 +1,10 @@
+[
+ {"id":"ordinary_text","expect":"PARAGRAPH"},{"id":"decimal_clause","expect":"CLAUSE"},{"id":"clause_reference","expect":"PARAGRAPH"},
+ {"id":"normal_table","expect":"TABLE_ROW"},{"id":"empty_v2_html","expect":"TABLE_FRAGMENT"},{"id":"text_in_table","expect":"TABLE"},
+ {"id":"bad_mineru_table","expect":"KEEP_AND_FLAG"},{"id":"cross_page_table","expect":"KEEP_SEPARATE_UNCERTAIN"},{"id":"cross_page_clause","expect":"SOURCE_SPANS_MULTI_PAGE"},
+ {"id":"number_in_table","expect":"CELL_FIRST"},{"id":"number_in_text","expect":"CANDIDATE_ONLY"},{"id":"duplicate_clause_no","expect":"UNIQUE_UNIT_ID"},
+ {"id":"title_misclassified","expect":"CANONICAL_TITLE_OR_TEXT"},{"id":"page_header","expect":"NOISE_FLAG"},{"id":"page_footer","expect":"NOISE_FLAG"},
+ {"id":"seal_nearby","expect":"KEEP_BUSINESS_TEXT"},{"id":"long_clause","expect":"SAFE_SPLIT"},{"id":"uncertain","expect":"UNCERTAIN_FRAGMENT"},
+ {"id":"rowspan","expect":"HTML_RECOVERY"},{"id":"colspan","expect":"HTML_RECOVERY"},{"id":"missing_section","expect":"EMPTY_SECTION_PATH"},
+ {"id":"page_number","expect":"NOISE_FLAG"},{"id":"native_table_overlap","expect":"SHARED_TABLE_OWNER"},{"id":"provenance","expect":"SOURCE_BLOCK_AND_SPAN"}
+]

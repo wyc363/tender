@@ -1,0 +1,32 @@
+cleaner:
+  header_zone_ratio: 0.10
+  footer_zone_ratio: 0.10
+  repeat_page_ratio: 0.60
+  keep_raw_blocks: true
+table:
+  prefer_v2_html: true
+  fallback_middle_json: true
+  fallback_pdf_native: true
+  unresolved_policy: keep_and_flag
+structure:
+  uncertain_policy: keep_and_fallback
+  require_non_noise_ownership: true
+clause:
+  enable_decimal_numbering: true
+  enable_chinese_article: true
+  enable_parenthesized_items: true
+  enable_circled_items: true
+  treat_number_as_candidate_only: true
+cross_page:
+  merge_clause: true
+  merge_table: true
+  uncertain_policy: keep_separate_and_flag
+chunking:
+  soft_max_chars: 1200
+  hard_max_chars: 1800
+  min_merge_chars: 150
+  fallback_overlap_chars: 120
+provenance:
+  require_source_block_ids: true
+  require_source_spans: true
+  require_page: true

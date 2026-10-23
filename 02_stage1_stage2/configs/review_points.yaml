@@ -1,0 +1,63 @@
+review_points:
+  regional_industry_award:
+    review_item: "地域/行业业绩奖项及外部荣誉作为招投标加分、中标条件"
+    official_rule_ids:
+      - "1201"
+      - "1202"
+      - "1203"
+      - "1204"
+      - "1205"
+      - "1206"
+      - "1207"
+      - "1208"
+      - "1209"
+      - "1210"
+      - "1211"
+      - "1212"
+    primary_sections:
+      - EVALUATION
+    required_sections:
+      - ANNOUNCEMENT
+      - QUALIFICATION
+    triggered_sections:
+      - DETERMINATION
+      - AWARD_SELECTION
+    conditional_sections:
+      - BIDDER_NOTICE_TABLE
+    context_on_demand_sections:
+      - CONTRACT
+    keyword_index_terms:
+      - "业绩"
+      - "奖项"
+      - "获奖"
+      - "荣誉"
+      - "信用评价"
+      - "协会"
+      - "省级"
+      - "市级"
+      - "县级"
+      - "地区"
+      - "行政区域"
+      - "得分"
+      - "加分"
+      - "定标"
+      - "择优"
+      - "中标"
+    qualification_terms:
+      - "资格条件"
+      - "资格审查"
+    conditional_reference_terms:
+      - "投标人须知前附表"
+      - "投标须知前附表"
+    range_anchor_terms:
+      - "业绩"
+      - "奖项"
+      - "获奖"
+      - "荣誉"
+      - "信用评价"
+      - "协会"
+      - "省级"
+      - "市级"
+      - "县级"
+      - "行政区域"
+      - "地区"

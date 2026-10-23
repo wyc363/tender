@@ -1,0 +1,20 @@
+[Unit]
+Description=Tender Review Demo Worker
+After=network-online.target tender-review-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tender-review
+Group=tender-review
+WorkingDirectory=/opt/tender_review/tender_review_system/05_pipeline_local
+EnvironmentFile=/opt/tender_review/tender_review_system/05_pipeline_local/.env
+ExecStart=/opt/tender_review/venv_main/bin/python -m review_pipeline.job_worker --config /opt/tender_review/tender_review_system/deploy/linux/pipeline.linux.yaml
+Restart=on-failure
+RestartSec=5
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
+
+

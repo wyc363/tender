@@ -1,0 +1,102 @@
+project:
+  root: "${TENDER_REVIEW_PROJECT_ROOT:-../..}"
+
+paths:
+  output_root: "${TENDER_REVIEW_OUTPUT_ROOT:-/opt/tender_review/outputs}"
+  temp_root: "${TENDER_REVIEW_TEMP_ROOT:-/opt/tender_review/outputs/.tmp}"
+  staging_root: "${TENDER_REVIEW_STAGING_ROOT:-/opt/tender_review/outputs/.staging}"
+  rule_store: "06_sample_artifacts/pilot5_rule_store_v2_boundary_enhanced.json"
+  retrieval_config: "04_retrieval_judge/configs/retrieval/RP_REGION_INDUSTRY_AWARD.json"
+  prompt_program: "06_sample_artifacts/C_compiled_program.json"
+
+projects:
+  docling: "01_pdf_docling"
+  parser: "01_pdf_docling"
+  chunk: "03_md_chunk"
+  retrieval: "04_retrieval_judge"
+  judge: "04_retrieval_judge"
+
+runtime:
+  python: null
+  docling_python_env: "TENDER_REVIEW_DOCLING_PYTHON"
+  parser_python_env: "TENDER_REVIEW_PARSER_PYTHON"
+  chunk_python_env: "TENDER_REVIEW_CHUNK_PYTHON"
+  retrieval_python_env: "TENDER_REVIEW_RETRIEVAL_PYTHON"
+  judge_python_env: "TENDER_REVIEW_JUDGE_PYTHON"
+
+env_files:
+  parser: "${TENDER_REVIEW_PARSER_ENV_FILE:-05_pipeline_local/.env}"
+  judge: "${TENDER_REVIEW_JUDGE_ENV_FILE:-05_pipeline_local/.env}"
+
+parser:
+  api_base_env: "PARSER_VLM_API_BASE"
+  api_key_env: "PARSER_VLM_API_KEY"
+  model_env: "PARSER_VLM_MODEL"
+  model: "qwen3.7-flash"
+  temperature: 0
+  max_tokens: 2500
+  enable_thinking: false
+  timeout_seconds: 120
+  retry_count: 1
+  max_pixels: 1572864
+  concurrency: 1
+
+judge:
+  api_base_env: "MODEL_API_BASE"
+  api_key_env: "MODEL_API_KEY"
+  model_env: "MODEL_NAME"
+  model: "qwen3-8b"
+  temperature: 0
+  max_tokens: 1024
+  enable_thinking: false
+  timeout_seconds: 120
+  retry_count: 2
+  retry_backoff_seconds: 2
+  force_stream: "auto"
+
+client:
+  pass_evidence_top_n: 3
+  enrichment_temperature: 0
+  enrichment_max_tokens: 512
+  enrichment_enable_thinking: false
+
+review:
+  enabled_review_points:
+    - "RP_REGION_INDUSTRY_AWARD"
+
+job:
+  database_path_env: "TENDER_REVIEW_JOB_DB"
+  database_path: null
+  poll_interval_seconds: 2
+  heartbeat_interval_seconds: 10
+  stale_after_seconds: 120
+  max_attempts: 2
+  worker_concurrency: 1
+  busy_timeout_ms: 5000
+
+http:
+  host: "0.0.0.0"
+  port: 8000
+  api_prefix: "/api/v1"
+  docs_enabled: true
+
+client_sync:
+  enabled: true
+  route_path: "/api/v1/review"
+  wait_timeout_seconds: 1800
+  poll_interval_seconds: 2
+
+file_url:
+  enabled: true
+  allowed_schemes: ["http", "https"]
+  allow_private_network: false
+  trusted_private_hosts: []
+  trusted_private_cidrs: []
+  max_redirects: 3
+  connect_timeout_seconds: 10
+  read_timeout_seconds: 60
+  write_timeout_seconds: 10
+  pool_timeout_seconds: 10
+  max_download_bytes: 67108864
+  chunk_size_bytes: 65536
+
